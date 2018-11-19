@@ -1,0 +1,46 @@
+
+
+*** create users table***
+CREATE TABLE coke.users(
+   User_ID INT PRIMARY KEY     NOT NULL,
+   NAME           TEXT    NOT NULL,
+   phone_number   character DEFAULT '4405225551',
+   created_at timestamp
+);
+
+*** create product table***
+CREATE TABLE coke.product(
+   PRODUCT_ID INT PRIMARY KEY     NOT NULL,
+   product_NAME           TEXT    NOT NULL,
+   product_Description   TEXT,
+   created_at timestamp
+);
+
+*** create orders table***
+CREATE TABLE coke.orders(
+   order_ID INT  NOT NULL,
+   PRODUCT_ID INT not null,
+   User_ID INT not null,
+   created_at timestamp,
+   primary key(order_ID,PRODUCT_ID,User_ID),
+   foreign key(user_id) references users(user_id),
+   foreign key(product_id) references product(product_id)
+   );
+
+*** create message_logs table***
+CREATE TABLE coke.message_logs(
+   message_ID INT NOT NULL,
+   PRODUCT_ID int not null,
+   User_ID int not null,
+   order_ID int not null,
+   message TEXT,
+   created_at timestamp,
+   primary key(message_ID,order_ID,PRODUCT_ID,User_ID),
+   foreign key(user_id) references users(user_id),
+   foreign key(product_id) references product(product_id)
+);
+
+
+*** Copy csv data into table ***
+
+    \copy coke.message_logs(message_id,product_id,user_id,order_id,message,created_at) from 'C:\Users\sreen\Desktop\message.csv' DELIMITER ',' CSV HEADER;
