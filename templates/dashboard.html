@@ -1,0 +1,132 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Bootstrap core CSS -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <!-- Custom styles for this template -->
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+  </head>
+
+  <body>
+    <nav class="navbar fixed-top flex-md-nowrap p-0 shadow">
+      <a style="font-size: 20px"  class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">
+        <img style="height:20px" class="img-fluid mx- mb-1" src="http://emotive.io/assets/img/favicon-white.png">
+        Emotive
+      </a>
+      <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+          <a class="nav-link" href="#">Sign out</a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+          <div class="sidebar-sticky">
+            <ul class="nav flex-column">
+              <li class="nav-item" id="message">
+              </li>
+              <li class="nav-item">
+              	<h6> <i class="fas fa-phone"></i> Customer Phone Number </h6>
+              	<input type="text" class="form-control" id="phone-number" placeholder="customer phone number" />
+              </li>
+              <li class="nav-item">
+              	<h6><i class="fas fa-wine-bottle"></i> Product type </h6>
+              	<span class="btn-group btn-group-toggle" data-toggle="buttons">
+              	  <label class="btn btn-success active">
+              	    <input type="radio" name="options" id="option1" value="vanilla" autocomplete="off" checked> Vanilla
+              	  </label>
+              	  <label class="btn btn-success">
+              	    <input type="radio" name="options" id="option2" value="cherry" autocomplete="off"> Cherry
+              	  </label>
+              	  <label class="btn btn-success">
+              	    <input type="radio" name="options" id="option3" value="Lime" autocomplete="off"> Lime
+              	  </label>
+              	</span>
+              </li>
+              <li class="nav-item">
+              	<h6> <i class="fas fa-user-alt"></i> Customer Name </h6>
+              	<input type="text" class="form-control" placeholder="Search" id="customer-name" />
+              </li>
+              <li class="nav-item">
+              	<button id="send-sms" class="btn btn-warning"> Send SMS</button>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">Messages</h1>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <span id="default-message">
+                Hi <span id="first-name" class="placeholder">first-name</span>, I saw that your <span class="placeholder product-type">product-type</span> coke was delivered. How are you enjoying it so far?
+              </span>
+              <button class="btn btn-warning float-right">Edit</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              Great.Can you describe what you love most about <span class="placeholder product-type">product-type</span>? 
+              <button class="btn btn-warning float-right">Edit</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              I'm Sorry to hear that. what do you dislike about <span class="placeholder product-type">product-type</span>?
+              <button class="btn btn-warning float-right">Edit</button>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready( () => {
+            $(".product-type").html('vanilla');
+            $('input[type=radio][name=options]').change(function() {
+                $(".product-type").html(this.value);
+            });
+            $('#customer-name').keyup(function() {
+                var dInput = this.value;
+                $('#first-name').html(dInput);
+                if (!dInput) {
+                    $('#first-name').html('there');
+                }
+            });
+            $('#send-sms').click(() => {
+                const phoneNumber = $('#phone-number').val();
+                const defaultMessage = $('#default-message').text();
+
+                $.post("/send-sms", {phoneNumber, message: defaultMessage}, ( data ) => {
+                    $("#message").html(
+                    `<div class="alert alert-success" role="alert">
+                        <strong>Well done!</strong> Message successfully sent
+                    </div>`
+                    )
+                }).fail(() =>  {
+                    $("#message").html(
+                        `<div class="alert alert-danger" role="alert">
+                            <strong>Opps!</strong> Something went wrong. Please try again
+                        </div>`
+                    )
+                });
+            });
+        });
+    </script>
+</body>
+</html>

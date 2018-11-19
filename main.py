@@ -1,18 +1,16 @@
 from flask import Flask,request, render_template,jsonify
 from twilio.twiml.messaging_response import MessagingResponse
+from twilio.rest import Client
 import psycopg2
 import requests
-from twilio.rest import Client
 import http.client, urllib, base64
 
 app = Flask(__name__)
-# @app.route("/")
-# def home():
-#     return ('Home page')
+
 
 @app.route("/dashboard")
 def dashboard():
-    print('sree')
+    # print('dashboard')
     return render_template('dashboard.html')
 
 @app.route("/send-sms", methods = ['POST'])
@@ -34,7 +32,7 @@ def execute_query(req):
     query=req
     cur.execute(query)
     results= cur.fetchall()
-    print(results)
+    # print(results)
     db.commit()
     cur.close()
     db.close()
@@ -45,26 +43,27 @@ def execute_query(req):
 def products():
     query = "Select product_name from product"
     result = execute_query(query)
-    print(result)
+        # print(result)
     return render_template('dashboard.html', result=result)
 
 def calculateSentimentAnalysis (body):
     documents = {'documents' : [
-        {'id': '1', 'language': 'en', 'text': body}
-    ]}
+                         {'id': '1', 'language': 'en', 'text': body}
+                ]}
     url = 'https://westcentralus.api.cognitive.microsoft.com/text/analytics/v2.0/sentiment'
-    headers   = {"Ocp-Apim-Subscription-Key": "5cb160e123e740ce9bf93b498f9fc670"}
+    headers   = {"Ocp-Apim-Subscription-Key": "23f6aef5da584b3985e2d01cc2163249"}
     response  = requests.post(url, headers=headers, json=documents)
     sentiments = response.json()
+    print(sentiments)
     return sentiments['documents'][0]['score']  
 
 @app.route("/sms", methods=['GET', 'POST'])
 def sms_ahoy_reply():
     """Respond to incoming messages with a friendly SMS."""
-    # Start our response
-    print(request.form)
+    # Start response
+    # print(request.form)
     body = request.form['Body']
-    print(body)
+    # print(body)
     score = calculateSentimentAnalysis(body)
         
     resp = MessagingResponse()
@@ -75,9 +74,11 @@ def sms_ahoy_reply():
         
     return str(resp)
 
+
+# Program execution starts from here. 
 if __name__ == "__main__":
     
-    print("Start program")
+    # print("Start program")
     db = psycopg2.connect(host='127.0.0.1', port=5432,user='coke',password='coke')
     cur = db.cursor()
     query = "Select * from coke.company"
