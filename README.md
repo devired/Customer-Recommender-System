@@ -9,7 +9,7 @@ dashboard.html = The dashboard for each machine
 
 The other files like Javascript, Bootstrap and CSS should be kept in the static folder as again thats where flask searches for it.
 
-The DB is a postgresql database : More on this you can find in the DB.md file.
+The DB is a postgresql database 
 
 The Twilio and Azure sentiment analysis API Integration,s & Webservice are written in Python using the flask package
 
